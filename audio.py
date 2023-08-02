@@ -19,8 +19,8 @@ def get_microfone_morse():
                 audio = recognizer.listen(source, timeout=5)
 
             # Realiza o reconhecimento de fala
-            text = recognizer.recognize_google(audio, language="pt-PT")
-
+            text = recognizer.recognize_google(audio, language="pt-BR")
+            print( text  )
             # Tokeniza o texto em palavras
             words = text.split()
 
@@ -29,9 +29,12 @@ def get_microfone_morse():
 
             # Corrige cada palavra reconhecida
             for word in words:
-                # Encontramos a palavra mais similar
-                most_similar_word = get_most_similar_word(word, target_words)
-                corrected_words.extend(most_similar_word)
+                if word in target_words:
+                    corrected_words.append(word)
+                else:
+                    # Encontramos a palavra mais similar
+                    most_similar_word = get_most_similar_word(word, target_words)
+                    corrected_words.extend(most_similar_word)
             break
 
         except sr.WaitTimeoutError:
@@ -44,7 +47,15 @@ def get_microfone_morse():
     return corrected_words
 
 def transform_to_morse(text):
-    return text.replace("ponto",".").replace("traço","-").replace("espaço"," ")
+    morse_list = list(map(lambda word: word.replace("ponto",".").replace("traço","-").replace("espaço"," "),text))
+    morse_words = "".join(morse_list).split(' ')
+    morse_final_words = []
+    for word in morse_words:
+        if word.strip() != '':
+            morse_final_words.append(word)
+    return morse_words
 
 if __name__ == "__main__":
     list_of_words = get_microfone_morse()
+    print(list_of_words)
+    print(transform_to_morse(list_of_words))
